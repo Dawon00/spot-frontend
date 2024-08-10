@@ -4,10 +4,10 @@ import { atom } from "recoil";
 export const initialState = atom({
   key: "initialState",
   default: {
-    stateName: "포항동부이끌림아파트",
+    stateName: "신흥초등학교",
 
-    lat: "36.021793",
-    lng: "129.351843",
+    lat: "36.012961",
+    lng: "129.353399",
   },
 });
 
