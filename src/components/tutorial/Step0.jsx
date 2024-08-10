@@ -5,7 +5,7 @@ import posco from "../../assets/posco.svg";
 function Step0() {
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#151515]">
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-cente mb-24">
         <img src={Logo} alt="logo" className="w-[124px]" />
       </div>{" "}
     </div>
