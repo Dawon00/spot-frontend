@@ -10,11 +10,11 @@ const TmapComponent = () => {
       if (!tmapInstanceRef.current && window.Tmapv3 && mapRef.current) {
         tmapInstanceRef.current = new window.Tmapv3.Map(mapRef.current, {
           center: new window.Tmapv3.LatLng(
-            37.566481622437934,
-            126.98502302169841
+            35.8386809,
+            129.2880871
           ),
-          width: "100%",
-          height: "400px",
+          width: "800px",
+          height: "600px",
           zoom: 18,
         });
       }
@@ -23,7 +23,7 @@ const TmapComponent = () => {
     initTmap();
   }, []);
 
-  return <div ref={mapRef} style={{ width: "100%", height: "400px" }} />;
+  return <div ref={mapRef} style={{ width: "800px", height: "600px" }} />;
 };
 
 export default TmapComponent;

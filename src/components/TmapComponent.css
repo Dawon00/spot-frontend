@@ -11,3 +11,7 @@
   font-size: 12px;
   text-align: left;
 }
+
+.vsm-canvas {
+  filter: invert(1) hue-rotate(180deg) saturate(0%);
+}
