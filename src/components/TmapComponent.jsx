@@ -146,9 +146,30 @@ const TmapComponent = () => {
           iconSize: new window.Tmapv2.Size(10, 20),
           map: tmapInstanceRef.current,
         });
-        tmapInstanceRef.current.setCenter(
-          new window.Tmapv2.LatLng(marker.lat, marker.lon)
-        );
+
+        if (string === "도착!") {
+          const lat = marker.lat
+          const lon = marker.lon
+
+          const initialLat = initial.lat
+          const initialLon = initial.lng
+
+          const calcLat = (Number(lat) + Number(initialLat)) / 2
+          const calcLon = (Number(lon) + Number(initialLon)) / 2
+
+          console.log(calcLat, "여기 lat")
+          console.log("여기 lon", lon, initialLon)
+
+          tmapInstanceRef.current.setCenter(
+            new window.Tmapv2.LatLng(calcLat, calcLon)
+          );
+        } else {
+          tmapInstanceRef.current.setCenter(
+            new window.Tmapv2.LatLng(marker.lat, marker.lon)
+          );
+        }
+
+
       });
     }
     const drawLine = (arrPoint, colors, isAvoid) => {
