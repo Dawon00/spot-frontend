@@ -44,7 +44,7 @@ function SearchModal() {
         latEntr = latEntr || newLatEntr || 0;
         console.log(lon, lat)
 
-        setMarkers(prev => [...prev, { type: "pending", lat: lat, lon: lon }])
+        setMarkers(prev => [...prev, { type: "destination", lat: lat, lon: lon }])
         setBefore(fullAddr)
         setIsSearching(prev => !prev)
       })
