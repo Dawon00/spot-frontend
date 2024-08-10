@@ -43,6 +43,10 @@ const TmapComponent = () => {
 
   const polylineRef = useRef([]); // Polyline 객체들을 저장하는 Ref
 
+  const [spots, setSpots] = useState([]);
+
+
+
   const onValid = (data) => {
     const fullAddr = data.search;
     console.log(fullAddr);
@@ -126,6 +130,7 @@ const TmapComponent = () => {
 
       }
     };
+
     if (tmapInstanceRef.current) {
       markers.forEach((marker) => {
         new window.Tmapv2.Marker({
@@ -144,6 +149,10 @@ const TmapComponent = () => {
         );
 
       });
+
+
+
+
     }
     const drawLine = (arrPoint, colors, isAvoid) => {
       // 기존의 모든 Polyline 삭제
@@ -242,12 +251,30 @@ const TmapComponent = () => {
 
     }
 
+
+
     initTmap();
   }, [isMap, initial, markers, clickLat, clickLng]);
 
+
   useEffect(() => {
-    console.log("여기 좌표", clickLat, clickLng)
-  }, [clickLat, clickLng])
+    const bounds = tmapInstanceRef.current.getBounds()
+    axios.get(`https://spot.tonggn.com/spots?startLatitude=${bounds._sw._lat}&startLongitude=${bounds._sw._lng}&endLatitude=${bounds._ne._lat}&endLongitude=${bounds._ne._lng}`)
+      .then(res => {
+        console.log(res, "왜 안 보여줌???")
+        const data = res.data.spots
+
+        data.map(item => {
+          new window.Tmapv2.Marker({
+            position: new window.Tmapv2.LatLng(item.latitude, item.longitude),
+
+            map: tmapInstanceRef.current,
+          });
+        })
+
+      }).catch(err => console.log(err))
+
+  }, [])
 
 
   return (
