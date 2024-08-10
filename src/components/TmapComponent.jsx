@@ -318,11 +318,6 @@ const TmapComponent = () => {
     }
   }, [isMap, markers, initial]);
 
-  // stopOver 상태가 변경될 때마다 출력
-  useEffect(() => {
-    console.log(stopOver);
-  }, [stopOver]);
-
   return (
     <>
       <div className="relative  z-10 px-5 pt-2">
