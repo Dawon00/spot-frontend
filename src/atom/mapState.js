@@ -6,8 +6,8 @@ export const initialState = atom({
   key: "initialState",
   default: {
     stateName: "포항역",
-    lat: 36.071593,
-    lng: 129.341927,
+    lat: "36.071593",
+    lng: "129.341927",
   }
 })
 
@@ -53,3 +53,8 @@ export const isArrivedState = atom({
   default: false,
 });
 
+// 길찾기 시작하는 state
+export const isMapState = atom({
+  key: "isMapState",
+  default: false
+})

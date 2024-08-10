@@ -17,7 +17,7 @@ function SearchModal() {
   const onValid = (data) => {
     const fullAddr = data.search
 
-    setBefore(fullAddr)
+
     const headers = { appKey: import.meta.env.VITE_TMAP_API_KEY };
     const url = 'https://apis.openapi.sk.com/tmap/geo/fullAddrGeo?version=1&format=json&callback=result';
 
@@ -45,6 +45,7 @@ function SearchModal() {
         console.log(lon, lat)
 
         setMarkers(prev => [...prev, { type: "pending", lat: lat, lon: lon }])
+        setBefore(fullAddr)
         setIsSearching(prev => !prev)
       })
       .catch(error => {
