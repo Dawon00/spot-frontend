@@ -55,7 +55,7 @@ function TutorialPage() {
         </div>
       ))}
       {currentStep !== 6 && currentStep < steps.length - 1 && (
-        <div className="absolute bottom-0 w-full flex justify-center p-4 z-20">
+        <div className="fixed bottom-5 left-0 right-0  w-full flex justify-center p-4 z-50">
           <WideButton onClick={handleNext}>{buttonText}</WideButton>
         </div>
       )}
