@@ -13,5 +13,10 @@
 }
 
 .vsm-canvas {
-  filter: invert(1) hue-rotate(180deg) saturate(0%);
+  filter: invert(1) hue-rotate(180deg);
 }
+
+/* 지도와 원의 필터 제거
+.vsm-canvas >  {
+  filter: none !important;
+} */
