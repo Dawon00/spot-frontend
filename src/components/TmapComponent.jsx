@@ -13,31 +13,35 @@ import {
   markerState,
   stopOverState,
 } from "../atom/mapState";
+
 import LocationSelector from "./LocationSelector";
 import WideButton from "./WideButton";
 
 const CurrentMarker = `
 <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
 <circle cx="18" cy="18" r="17" fill="#00FFAE" fill-opacity="0.5"/>
-<g filter="url(#filter0_d_141_896)">
+<g filter="url(#filter0_d_184_4602)">
 <circle cx="18" cy="18" r="8" fill="#009DFF"/>
-<circle cx="18" cy="18" r="6.5" stroke="white" stroke-width="3"/>
+<circle cx="18" cy="18" r="6.5" stroke="black" stroke-width="3"/>
 </g>
 <defs>
-<filter id="filter0_d_141_896" x="0" y="0" width="36" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<filter id="filter0_d_184_4602" x="0" y="0" width="36" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
 <feFlood flood-opacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset/>
 <feGaussianBlur stdDeviation="5"/>
 <feComposite in2="hardAlpha" operator="out"/>
 <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0.615686 0 0 0 0 1 0 0 0 1 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_141_896"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_141_896" result="shape"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_184_4602"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_184_4602" result="shape"/>
 </filter>
 </defs>
 </svg>
 
+
 `;
+
+
 const DepMarker = `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_i_75_47370)">
 <circle cx="13" cy="13" r="13" fill="#009DFF"/>
@@ -100,9 +104,15 @@ const DestMarker = `<svg width="56" height="66" viewBox="0 0 56 66" fill="none" 
 const TmapComponent = () => {
   const mapRef = useRef(null);
   const tmapInstanceRef = useRef(null); // 지도 객체를 저장하는 Ref
-  const [markers, setMarkers] = useRecoilState(markerState);
-  const isSearching = useRecoilValue(isSearchingState);
-  const isClickDe = useRecoilValue(isClickDeState);
+
+  const [markers, setMarkers] = useRecoilState(markerState)
+  const isSearching = useRecoilValue(isSearchingState)
+  const isClickDe = useRecoilValue(isClickDeState)
+
+  const [initial, setinitial] = useRecoilState(initialState)
+
+  const [isMap, setIsMap] = useRecoilState(isMapState)
+  const { register, handleSubmit } = useForm()
 
   const [initial, setinitial] = useRecoilState(initialState);
   const [stopOver, setStopOver] = useRecoilState(stopOverState);
@@ -150,7 +160,8 @@ const TmapComponent = () => {
         latEntr = latEntr || newLatEntr || 0;
         console.log(lon, lat);
 
-        setMarkers((prev) => [...prev, { lat: lat, lon: lon }]);
+
+        setMarkers(prev => [...prev, { lat: lat, lng: lon }])
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -186,6 +197,7 @@ const TmapComponent = () => {
           map: tmapInstanceRef.current,
         });
 
+
         // 모바일 이벤트 리스너 추가
         tmapInstanceRef.current.addListener("touchstart", function (e) {
           const clickedLat = e.latLng.lat();
@@ -209,6 +221,7 @@ const TmapComponent = () => {
             [clickedLat, clickedLng],
           ]);
         });
+
       }
     };
 
@@ -231,8 +244,81 @@ const TmapComponent = () => {
           map: tmapInstanceRef.current,
         });
       });
+
+      // 지도 중심 이동
+      tmapInstanceRef.current.setCenter(new window.Tmapv2.LatLng(marker.lat, marker.lon));
+
+    });
+
+    const drawLine = (arrPoint, colors) => {
+      const drawInfoArr = [];
+
+      for (let i = 0; i < arrPoint.length - 1; i++) {
+        const polyline = new window.Tmapv2.Polyline({
+          path: [arrPoint[i], arrPoint[i + 1]],
+          strokeColor: colors[i],
+          strokeWeight: 10,
+          map: tmapInstanceRef.current,
+        });
+        drawInfoArr.push(polyline);
+      }
+
+      setResultDrawArr((prevArr) => [...prevArr, ...drawInfoArr]);
+    };
+
+    if (isMap) {
+      //경로 탐색 API 호출
+      console.log(markers[0])
+      try {
+        const headers = { "appKey": import.meta.env.VITE_TMAP_API_KEY };
+        const response = axios.post(
+          "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+          {
+            startX: initial.lng,
+            startY: initial.lat,
+            endX: markers[0].lon,
+            endY: markers[0].lat,
+            reqCoordType: "WGS84GEO",
+            resCoordType: "EPSG3857",
+            startName: "출발지",
+            endName: "도착지",
+          },
+          { headers }
+        ).then(res => {
+
+          const resultData = res.data.features;
+          const drawInfoArr = [];
+          let segmentColors = [];
+
+          resultData.forEach((item) => {
+            const { geometry, properties } = item;
+            if (geometry.type === "LineString") {
+              geometry.coordinates.forEach((coord, index) => {
+                const latlng = new window.Tmapv2.Point(coord[0], coord[1]);
+                const convertedPoint = new window.Tmapv2.Projection.convertEPSG3857ToWGS84GEO(latlng);
+                drawInfoArr.push(new window.Tmapv2.LatLng(convertedPoint._lat, convertedPoint._lng));
+              });
+            }
+          });
+
+          // 그라디언트 색상 배열 생성
+          segmentColors = gradientColorsHex(drawInfoArr.length - 1);
+
+          drawLine(drawInfoArr, segmentColors);
+
+        }).catch(err => conosle.log(err));
+
+
+      } catch (error) {
+        console.error("Error fetching route:", error);
+      }
     }
-  }, [markers]);
+
+
+
+
+    initTmap();
+  }, [markers, isMap]);
 
   // stopOver 상태가 변경될 때마다 출력
   useEffect(() => {
@@ -246,8 +332,9 @@ const TmapComponent = () => {
         {isSearching ? <SearchResult /> : null}
 
         {isClickDe ? <LocationSelector /> : null}
-        {isClickDe ? (
-          <div className="fixed w-full bottom-4 left-0 px-3">
+
+        {isClickDe ?
+          <div className="fixed w-full bottom-4 left-0 px-3" onClick={() => setIsMap(true)}>
             <WideButton>다음</WideButton>
           </div>
         ) : null}
