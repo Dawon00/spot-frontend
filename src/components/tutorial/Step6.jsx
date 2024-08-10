@@ -5,8 +5,8 @@ function Step6({ onRouteChange }) {
     <div className="relative w-full h-full">
       <img src={step6} alt="Step6" className="w-full h-full object-cover" />
       <div
-        className="absolute top-[340px] left-[170px]
-                    text-white rounded-full py-16 px-16 cursor-pointer
+        className="absolute top-[280px] left-[70px]
+                    text-white rounded-full py-20 px-20 cursor-pointer
                    "
         onClick={onRouteChange}
       >
