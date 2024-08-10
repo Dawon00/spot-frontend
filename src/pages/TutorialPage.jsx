@@ -39,8 +39,8 @@ function TutorialPage() {
     currentStep === steps.length - 2
       ? "완료하기"
       : currentStep === 0
-      ? "Let's Start!"
-      : "NEXT";
+      ? "시작"
+      : "다음";
 
   return (
     <div className="w-full min-h-screen bg-black">
