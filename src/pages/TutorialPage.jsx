@@ -10,9 +10,11 @@ import Step5 from "../components/tutorial/Step5";
 import Step6 from "../components/tutorial/Step6";
 import Step7 from "../components/tutorial/Step7";
 import Step8 from "../components/tutorial/Step8";
+import Step9 from "../components/tutorial/Step9";
+import Step0 from "../components/tutorial/Step0";
 
 function TutorialPage() {
-  const [currentStep, setCurrentStep] = useRecoilState(currentStepState); // Recoil 상태 사용
+  const [currentStep, setCurrentStep] = useRecoilState(currentStepState);
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -21,6 +23,7 @@ function TutorialPage() {
   };
 
   const steps = [
+    <Step0 />,
     <Step1 />,
     <Step2 />,
     <Step3 />,
@@ -29,10 +32,11 @@ function TutorialPage() {
     <Step6 onRouteChange={handleNext} />,
     <Step7 />,
     <Step8 />,
+    <Step9 />,
   ];
 
   const buttonText =
-    currentStep === steps.length - 1
+    currentStep === steps.length - 2
       ? "완료하기"
       : currentStep === 0
       ? "Let's Start!"
@@ -41,7 +45,7 @@ function TutorialPage() {
   return (
     <div className="w-full min-h-screen bg-black">
       {steps[currentStep]}
-      {currentStep !== 5 && (
+      {currentStep !== 6 && currentStep < steps.length - 1 && (
         <div className="absolute bottom-0 w-full flex justify-center p-4">
           <WideButton onClick={handleNext}>{buttonText}</WideButton>
         </div>
