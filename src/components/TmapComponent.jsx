@@ -9,6 +9,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import {
   initialState,
   isClickDeState,
+  isMapState,
   isSearchingState,
   markerState,
   stopOverState,
@@ -40,7 +41,6 @@ const CurrentMarker = `
 
 
 `;
-
 
 const DepMarker = `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_i_75_47370)">
@@ -105,14 +105,11 @@ const TmapComponent = () => {
   const mapRef = useRef(null);
   const tmapInstanceRef = useRef(null); // 지도 객체를 저장하는 Ref
 
-  const [markers, setMarkers] = useRecoilState(markerState)
-  const isSearching = useRecoilValue(isSearchingState)
-  const isClickDe = useRecoilValue(isClickDeState)
+  const [markers, setMarkers] = useRecoilState(markerState);
+  const isSearching = useRecoilValue(isSearchingState);
+  const isClickDe = useRecoilValue(isClickDeState);
 
-  const [initial, setinitial] = useRecoilState(initialState)
-
-  const [isMap, setIsMap] = useRecoilState(isMapState)
-  const { register, handleSubmit } = useForm()
+  const [isMap, setIsMap] = useRecoilState(isMapState);
 
   const [initial, setinitial] = useRecoilState(initialState);
   const [stopOver, setStopOver] = useRecoilState(stopOverState);
@@ -160,8 +157,7 @@ const TmapComponent = () => {
         latEntr = latEntr || newLatEntr || 0;
         console.log(lon, lat);
 
-
-        setMarkers(prev => [...prev, { lat: lat, lng: lon }])
+        setMarkers((prev) => [...prev, { lat: lat, lng: lon }]);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -197,7 +193,6 @@ const TmapComponent = () => {
           map: tmapInstanceRef.current,
         });
 
-
         // 모바일 이벤트 리스너 추가
         tmapInstanceRef.current.addListener("touchstart", function (e) {
           const clickedLat = e.latLng.lat();
@@ -221,7 +216,6 @@ const TmapComponent = () => {
             [clickedLat, clickedLng],
           ]);
         });
-
       }
     };
 
@@ -229,7 +223,6 @@ const TmapComponent = () => {
   }, [initial, setMarkers]);
 
   useEffect(() => {
-    // 마커 추가
     if (tmapInstanceRef.current) {
       markers.forEach((marker) => {
         new window.Tmapv2.Marker({
@@ -246,10 +239,16 @@ const TmapComponent = () => {
       });
 
       // 지도 중심 이동
-      tmapInstanceRef.current.setCenter(new window.Tmapv2.LatLng(marker.lat, marker.lon));
+      if (markers.length > 0) {
+        const lastMarker = markers[markers.length - 1];
+        tmapInstanceRef.current.setCenter(
+          new window.Tmapv2.LatLng(lastMarker.lat, lastMarker.lon)
+        );
+      }
+    }
+  }, [markers]);
 
-    });
-
+  useEffect(() => {
     const drawLine = (arrPoint, colors) => {
       const drawInfoArr = [];
 
@@ -263,62 +262,61 @@ const TmapComponent = () => {
         drawInfoArr.push(polyline);
       }
 
-      setResultDrawArr((prevArr) => [...prevArr, ...drawInfoArr]);
+      // setResultDrawArr((prevArr) => [...prevArr, ...drawInfoArr]);
     };
 
-    if (isMap) {
-      //경로 탐색 API 호출
-      console.log(markers[0])
-      try {
-        const headers = { "appKey": import.meta.env.VITE_TMAP_API_KEY };
-        const response = axios.post(
-          "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
-          {
-            startX: initial.lng,
-            startY: initial.lat,
-            endX: markers[0].lon,
-            endY: markers[0].lat,
-            reqCoordType: "WGS84GEO",
-            resCoordType: "EPSG3857",
-            startName: "출발지",
-            endName: "도착지",
-          },
-          { headers }
-        ).then(res => {
+    if (isMap && markers.length > 0) {
+      const fetchRoute = async () => {
+        try {
+          const headers = { appKey: import.meta.env.VITE_TMAP_API_KEY };
+          const response = await axios.post(
+            "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
+            {
+              startX: initial.lng,
+              startY: initial.lat,
+              endX: markers[0].lon,
+              endY: markers[0].lat,
+              reqCoordType: "WGS84GEO",
+              resCoordType: "EPSG3857",
+              startName: "출발지",
+              endName: "도착지",
+            },
+            { headers }
+          );
 
-          const resultData = res.data.features;
+          const resultData = response.data.features;
           const drawInfoArr = [];
           let segmentColors = [];
 
           resultData.forEach((item) => {
-            const { geometry, properties } = item;
+            const { geometry } = item;
             if (geometry.type === "LineString") {
-              geometry.coordinates.forEach((coord, index) => {
+              geometry.coordinates.forEach((coord) => {
                 const latlng = new window.Tmapv2.Point(coord[0], coord[1]);
-                const convertedPoint = new window.Tmapv2.Projection.convertEPSG3857ToWGS84GEO(latlng);
-                drawInfoArr.push(new window.Tmapv2.LatLng(convertedPoint._lat, convertedPoint._lng));
+                const convertedPoint =
+                  new window.Tmapv2.Projection.convertEPSG3857ToWGS84GEO(
+                    latlng
+                  );
+                drawInfoArr.push(
+                  new window.Tmapv2.LatLng(
+                    convertedPoint._lat,
+                    convertedPoint._lng
+                  )
+                );
               });
             }
           });
 
-          // 그라디언트 색상 배열 생성
           segmentColors = gradientColorsHex(drawInfoArr.length - 1);
-
           drawLine(drawInfoArr, segmentColors);
+        } catch (error) {
+          console.error("Error fetching route:", error);
+        }
+      };
 
-        }).catch(err => conosle.log(err));
-
-
-      } catch (error) {
-        console.error("Error fetching route:", error);
-      }
+      fetchRoute();
     }
-
-
-
-
-    initTmap();
-  }, [markers, isMap]);
+  }, [isMap, markers, initial]);
 
   // stopOver 상태가 변경될 때마다 출력
   useEffect(() => {
@@ -333,8 +331,11 @@ const TmapComponent = () => {
 
         {isClickDe ? <LocationSelector /> : null}
 
-        {isClickDe ?
-          <div className="fixed w-full bottom-4 left-0 px-3" onClick={() => setIsMap(true)}>
+        {isClickDe ? (
+          <div
+            className="fixed w-full bottom-4 left-0 px-3"
+            onClick={() => setIsMap(true)}
+          >
             <WideButton>다음</WideButton>
           </div>
         ) : null}
