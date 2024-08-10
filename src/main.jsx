@@ -5,6 +5,7 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import TutorialPage from "./pages/TutorialPage.jsx";
+
 import MapPage from "./pages/MapPage.jsx";
 
 const router = createBrowserRouter([
