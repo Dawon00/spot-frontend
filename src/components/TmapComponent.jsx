@@ -6,8 +6,9 @@ import { useForm } from "react-hook-form";
 import SearchModal from "./SearchModal";
 import SearchResult from "./SearchResult"
 import { useRecoilState, useRecoilValue } from "recoil";
-import { isClickDeState, isSearchingState, markerState } from "../atom/mapState";
+import { initialState, isClickDeState, isSearchingState, markerState } from "../atom/mapState";
 import LocationSelector from "./LocationSelector";
+import WideButton from "./WideButton"
 
 
 const CurrentMarker = `
@@ -32,6 +33,64 @@ const CurrentMarker = `
 </svg>
 
 `
+const DepMarker = `<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_i_75_47370)">
+<circle cx="13" cy="13" r="13" fill="#009DFF"/>
+</g>
+<g filter="url(#filter1_i_75_47370)">
+<circle cx="13" cy="13" r="7.94444" fill="white"/>
+</g>
+<defs>
+<filter id="filter0_i_75_47370" x="0" y="0" width="27" height="27" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="1" dy="1"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_75_47370"/>
+</filter>
+<filter id="filter1_i_75_47370" x="5.05556" y="5.05554" width="16.8889" height="16.8889" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dx="1" dy="1"/>
+<feGaussianBlur stdDeviation="2"/>
+<feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0"/>
+<feBlend mode="normal" in2="shape" result="effect1_innerShadow_75_47370"/>
+</filter>
+</defs>
+</svg>
+`
+
+const DestMarker = `<svg width="56" height="66" viewBox="0 0 56 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g filter="url(#filter0_d_85_24104)">
+<path d="M13.7886 13.7886C21.3978 6.17938 33.7544 6.17725 41.3657 13.7886C48.9749 21.3977 48.9771 33.7544 41.3657 41.3657L27.5772 55.1543L13.7886 41.3657C6.17727 33.7544 6.17727 21.3999 13.7886 13.7886Z" fill="#5E5E5E"/>
+<path d="M14.1421 14.1421C21.5561 6.72816 33.5962 6.7261 41.0122 14.1421C48.4261 21.5561 48.4282 33.5962 41.0122 41.0122L27.5772 54.4472L14.1421 41.0122C6.72608 33.5961 6.72608 21.5582 14.1421 14.1421Z" stroke="#ABABAB"/>
+</g>
+<path d="M16.78 23.7951C14.0742 26.4931 14.228 30.9659 17.2446 33.4606C19.8845 35.6453 23.7989 35.3511 26.2254 32.9316L32.6258 26.5495C33.6209 25.5573 35.3474 25.4446 36.3895 26.3867C37.5604 27.4447 37.5949 29.2538 36.49 30.3524L30.35 36.4748C29.5967 37.226 29.5967 38.4467 30.35 39.1979C31.1034 39.9491 32.3276 39.9491 33.081 39.1979L39.1362 33.1601C41.5627 30.7406 41.8483 26.8406 39.6479 24.2176C37.1335 21.2222 32.6478 21.0751 29.9388 23.7763L23.3845 30.3118C22.3141 31.3791 20.5751 31.3791 19.5047 30.3118C18.4562 29.2663 18.4562 27.5667 19.5047 26.5213L25.6729 20.3708C26.4263 19.6196 26.4263 18.3989 25.6729 17.6477C24.9195 16.8965 23.6953 16.8965 22.9419 17.6477L16.7769 23.7951L16.78 23.7951Z" fill="url(#paint0_linear_85_24104)"/>
+<path d="M28.212 17.2962C29.3824 17.2962 30.3313 16.3474 30.3313 15.1769C30.3313 14.0064 29.3824 13.0576 28.212 13.0576C27.0415 13.0576 26.0926 14.0064 26.0926 15.1769C26.0926 16.3474 27.0415 17.2962 28.212 17.2962Z" fill="#009DFF"/>
+<path d="M27.6822 44C28.9112 44 29.9075 43.0037 29.9075 41.7747C29.9075 40.5457 28.9112 39.5494 27.6822 39.5494C26.4531 39.5494 25.4568 40.5457 25.4568 41.7747C25.4568 43.0037 26.4531 44 27.6822 44Z" fill="#00FFAE"/>
+<defs>
+<filter id="filter0_d_85_24104" x="3.08009" y="8.08087" width="48.9933" height="57.0734" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="5"/>
+<feGaussianBlur stdDeviation="2.5"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_85_24104"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_85_24104" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_85_24104" x1="28" y1="17.0843" x2="28" y2="39.7613" gradientUnits="userSpaceOnUse">
+<stop stop-color="#009DFF"/>
+<stop offset="1" stop-color="#00FFAE"/>
+</linearGradient>
+</defs>
+</svg>
+`
 
 
 const TmapComponent = () => {
@@ -40,6 +99,8 @@ const TmapComponent = () => {
   const [markers, setMarkers] = useRecoilState(markerState)
   const isSearching = useRecoilValue(isSearchingState)
   const isClickDe = useRecoilValue(isClickDeState)
+
+  const [initial, setinitial] = useRecoilState(initialState)
   const { register, handleSubmit } = useForm()
 
 
@@ -86,7 +147,7 @@ const TmapComponent = () => {
       if (!tmapInstanceRef.current && window.Tmapv2 && mapRef.current) {
         // 지도 생성
         tmapInstanceRef.current = new window.Tmapv2.Map(mapRef.current, {
-          center: new window.Tmapv2.LatLng(36.071593, 129.341927),
+          center: new window.Tmapv2.LatLng(initial.lat, initial.lng),
           width: "100vw",
           height: "100vh",
           zoom: 16,
@@ -95,7 +156,7 @@ const TmapComponent = () => {
 
 
         new window.Tmapv2.Circle({
-          center: new window.Tmapv2.LatLng(36.071593, 129.341927),
+          center: new window.Tmapv2.LatLng(initial.lat, initial.lng),
           radius: 100,
           fillColor: "#00FFAE",
           fillOpacity: 0.5,
@@ -105,7 +166,7 @@ const TmapComponent = () => {
         })
 
         new window.Tmapv2.Marker({
-          position: new window.Tmapv2.LatLng(36.071593, 129.341927),
+          position: new window.Tmapv2.LatLng(initial.lat, initial.lng),
           iconHTML: CurrentMarker,
           iconSize: new window.Tmapv2.Size(35, 18),
           map: tmapInstanceRef.current,
@@ -181,6 +242,8 @@ const TmapComponent = () => {
     markers.forEach(marker => {
       new window.Tmapv2.Marker({
         position: new window.Tmapv2.LatLng(marker.lat, marker.lon),
+        iconHTML: marker.type === "departure" ? DepMarker : DestMarker,
+        iconSize: new window.Tmapv2.Size(10, 20),
         map: tmapInstanceRef.current,
       });
       // 지도 중심 이동
@@ -219,6 +282,10 @@ const TmapComponent = () => {
           : null}
 
         {isClickDe ? <LocationSelector /> : null}
+        {isClickDe ?
+          <div className="fixed w-full bottom-4 left-0 px-3">
+            <WideButton>다음</WideButton>
+          </div> : null}
       </div>
 
       <div className="map fixed top-0 left-0 z-0" ref={mapRef} />

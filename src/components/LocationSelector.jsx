@@ -1,17 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import close from "../assets/Close.svg";
 import blueDot from "../assets/blue_dot.svg";
 import greenDot from "../assets/green_dot.svg";
 import logoColorful from "../assets/logo_colorful.svg";
 import LoadingBar from "./LoadingBar";
+import { useRecoilState } from "recoil";
+import { departureState, destinationState, initialState } from "../atom/mapState";
 
 function LocationSelector() {
-  const [isLocationReady, setIsLocationReady] = useState(true);
+  const [isLocationReady, setIsLocationReady] = useState(false);
   const [start, setStart] = useState("신평동"); // 출발지로 설정된 장소
   const [end, setEnd] = useState("경주 힐튼 호텔"); // 도착지로 설정된 장소
 
+  const [dep, setDep] = useRecoilState(departureState)
+  const [dest, setDest] = useRecoilState(destinationState)
+  const [initial, setinitial] = useRecoilState(initialState)
+
+  useEffect(() => {
+    if (dep === "") {
+      setDep(initial.stateName)
+      return
+    }
+
+    if (dest === "") {
+      setDest(initial.stateName)
+      return
+    }
+  }, [])
+
   return (
-    <div className="h-[200px] flex absolute top-0 left-0 right-0 bg-[#4D4D4D] bg-opacity-70 backdrop-blur-md  text-white p-6 rounded-b-3xl">
+    <div className="pt-10 flex absolute top-0 left-0 right-0 bg-[#4D4D4D] bg-opacity-70 backdrop-blur-md  text-white p-6 rounded-b-3xl">
       <div className="flex flex-col justify-end w-full">
         <div className="flex">
           <div className="flex-1 pr-6">
@@ -26,8 +44,8 @@ function LocationSelector() {
               {isLocationReady ? (
                 <span className="text-white">{start}</span>
               ) : (
-                <button onClick={() => {}} className="text-[#B9B9B9]">
-                  출발지
+                <button onClick={() => { }} className="text-[#B9B9B9]">
+                  {dep}
                 </button>
               )}
             </div>
@@ -40,8 +58,8 @@ function LocationSelector() {
               {isLocationReady ? (
                 <span className="text-white">{end}</span>
               ) : (
-                <button onClick={() => {}} className="text-[#B9B9B9]">
-                  도착지
+                <button onClick={() => { }} className="text-[#B9B9B9]">
+                  {dest}
                 </button>
               )}
             </div>
@@ -53,7 +71,7 @@ function LocationSelector() {
               src={close}
               alt="close"
               className="w-4 h-4"
-              onClick={() => {}}
+              onClick={() => { }}
             />
           )}
         </div>
