@@ -1,11 +1,14 @@
+import { Outlet } from "react-router-dom";
 import "./App.css";
-import TmapComponent from "./components/TmapComponent";
+import { RecoilRoot } from "recoil";
 
 function App() {
   return (
-    <div className="App">
-      <TmapComponent />
-    </div>
+    <RecoilRoot>
+      <div className="App">
+        <Outlet />
+      </div>
+    </RecoilRoot>
   );
 }
 
