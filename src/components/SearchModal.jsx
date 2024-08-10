@@ -44,7 +44,7 @@ function SearchModal() {
         latEntr = latEntr || newLatEntr || 0;
         console.log(lon, lat)
 
-        setMarkers(prev => [...prev, { type: "히히", lat: lat, lon: lon }])
+        setMarkers(prev => [...prev, { type: "pending", lat: lat, lon: lon }])
         setIsSearching(prev => !prev)
       })
       .catch(error => {

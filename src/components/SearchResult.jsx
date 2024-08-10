@@ -1,6 +1,6 @@
 import React from "react";
 import { useRecoilState } from "recoil";
-import { beforeState, departureState, destinationState, isClickDeState, isSearchingState } from "../atom/mapState";
+import { beforeState, departureState, destinationState, isClickDeState, isSearchingState, markerState } from "../atom/mapState";
 
 function SearchResult() {
   const [before, setBefore] = useRecoilState(beforeState)
@@ -10,6 +10,9 @@ function SearchResult() {
 
   const [isSearching, setIsSearching] = useRecoilState(isSearchingState)
   const [isClickDe, setIsClickDe] = useRecoilState(isClickDeState)
+
+  const [markers, setMarkers] = useRecoilState(markerState)
+  console.log(markers)
 
   return (
     <div className="h-[170px] flex flex-col justify-around fixed bottom-0 left-0 right-0 bg-gradient-to-r from-[#323232] to-[#525252] opacity-80 text-white p-6 rounded-t-3xl">
@@ -25,12 +28,23 @@ function SearchResult() {
           setDep(before)
           setIsSearching(false)
           setIsClickDe(true)
+
+          const newMarkers = markers.map(marker =>
+            marker.type === "pending" ? { ...marker, type: "depature" } : marker
+          )
+          setMarkers(newMarkers)
         }}>출발지</div>
         <div>|</div>
         <div className="w-1/2 flex justify-center" onClick={() => {
           setDest(before)
           setIsSearching(false)
           setIsClickDe(true)
+
+          const newMarkers = markers.map(marker =>
+            marker.type === "pending" ? { ...marker, type: "destination" } : marker
+          )
+          setMarkers(newMarkers)
+
         }}>도착지</div>
       </div>
     </div>
