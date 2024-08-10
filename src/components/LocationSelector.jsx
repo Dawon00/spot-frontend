@@ -5,10 +5,10 @@ import greenDot from "../assets/green_dot.svg";
 import logoColorful from "../assets/logo_colorful.svg";
 import LoadingBar from "./LoadingBar";
 import { useRecoilState } from "recoil";
-import { departureState, destinationState, initialState } from "../atom/mapState";
+import { departureState, destinationState, initialState, isMapState } from "../atom/mapState";
 
 function LocationSelector() {
-  const [isLocationReady, setIsLocationReady] = useState(false);
+  const [isMap, setIsMap] = useRecoilState(isMapState);
   const [start, setStart] = useState("신평동"); // 출발지로 설정된 장소
   const [end, setEnd] = useState("경주 힐튼 호텔"); // 도착지로 설정된 장소
 
@@ -35,14 +35,14 @@ function LocationSelector() {
           <div className="flex-1 pr-6">
             {" "}
             <div className="flex items-center mb-2">
-              {isLocationReady ? (
+              {isMap ? (
                 <img src={blueDot} alt="blueDot" className="w-3 h-4 mr-3" />
               ) : (
                 <span className="mr-3">출발</span>
               )}
 
-              {isLocationReady ? (
-                <span className="text-white">{start}</span>
+              {isMap ? (
+                <span className="text-white">{dep}</span>
               ) : (
                 <button onClick={() => { }} className="text-[#B9B9B9]">
                   {dep}
@@ -50,13 +50,13 @@ function LocationSelector() {
               )}
             </div>
             <div className="flex items-center">
-              {isLocationReady ? (
+              {isMap ? (
                 <img src={greenDot} alt="greenDot" className="w-3 h-4 mr-3" />
               ) : (
                 <span className="mr-3">도착</span>
               )}{" "}
-              {isLocationReady ? (
-                <span className="text-white">{end}</span>
+              {isMap ? (
+                <span className="text-white">{dest}</span>
               ) : (
                 <button onClick={() => { }} className="text-[#B9B9B9]">
                   {dest}
@@ -64,7 +64,7 @@ function LocationSelector() {
               )}
             </div>
           </div>
-          {isLocationReady ? (
+          {isMap ? (
             <img src={logoColorful} className="w-16 h-16" />
           ) : (
             <img
@@ -75,12 +75,12 @@ function LocationSelector() {
             />
           )}
         </div>
-        {isLocationReady && (
+        {isMap && (
           <div>
             <div className="h-[1px] w-full px-4 my-4 bg-[#585858]"></div>
             <div className="flex">
               <div className="mr-4">12km</div>
-              <LoadingBar isReady={isLocationReady} />
+              <LoadingBar isReady={isMap} />
             </div>
           </div>
         )}
