@@ -29,10 +29,6 @@ function SearchResult() {
           setIsSearching(false)
           setIsClickDe(true)
 
-          const newMarkers = markers.map(marker =>
-            marker.type === "pending" ? { ...marker, type: "depature" } : marker
-          )
-          setMarkers(newMarkers)
         }}>출발지</div>
         <div>|</div>
         <div className="w-1/2 flex justify-center" onClick={() => {
@@ -40,10 +36,6 @@ function SearchResult() {
           setIsSearching(false)
           setIsClickDe(true)
 
-          const newMarkers = markers.map(marker =>
-            marker.type === "pending" ? { ...marker, type: "destination" } : marker
-          )
-          setMarkers(newMarkers)
 
         }}>도착지</div>
       </div>
