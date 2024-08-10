@@ -19,3 +19,8 @@ export const searchTypeState = atom({
   key: "searchTypeState",
   default: "",
 });
+
+export const isArrivedState = atom({
+  key: "isArrivedState",
+  default: true,
+});
