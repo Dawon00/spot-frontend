@@ -38,18 +38,17 @@ const TmapComponent = () => {
   const [stopOver, setStopOver] = useRecoilState(stopOverState);
   const { register, handleSubmit } = useForm();
 
-  const [clickLat, setClickLat] = useState(null)
-  const [clickLng, setClickLng] = useState(null)
+  const [clickLat, setClickLat] = useState(null);
+  const [clickLng, setClickLng] = useState(null);
 
-  const [isClick, setIsClick] = useState(0)
+  const [isClick, setIsClick] = useState(0);
 
   const polylineRef = useRef([]); // Polyline 객체들을 저장하는 Ref
 
   const [spots, setSpots] = useState([]);
-  const [string, setString] = useState("출발!")
+  const [string, setString] = useState("출발!");
 
-  const [isArrive, setIsArrive] = useRecoilState(isArrivedState)
-
+  const [isArrive, setIsArrive] = useRecoilState(isArrivedState);
 
   const onValid = (data) => {
     const fullAddr = data.search;
@@ -93,14 +92,15 @@ const TmapComponent = () => {
         latEntr = latEntr || newLatEntr || 0;
         console.log(lon, lat);
 
-        setMarkers((prev) => [...prev, { type: "pending", lat: lat, lng: lon }]);
+        setMarkers((prev) => [
+          ...prev,
+          { type: "pending", lat: lat, lng: lon },
+        ]);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
-
-
 
   useEffect(() => {
     const initTmap = () => {
@@ -130,8 +130,6 @@ const TmapComponent = () => {
           iconSize: new window.Tmapv2.Size(35, 18),
           map: tmapInstanceRef.current,
         });
-
-
       }
     };
 
@@ -143,20 +141,15 @@ const TmapComponent = () => {
             marker.type === "departure"
               ? DepMarker
               : marker.type === "destination"
-                ? DestMarker
-                : CurrentMarker,
+              ? DestMarker
+              : CurrentMarker,
           iconSize: new window.Tmapv2.Size(10, 20),
           map: tmapInstanceRef.current,
         });
         tmapInstanceRef.current.setCenter(
           new window.Tmapv2.LatLng(marker.lat, marker.lon)
         );
-
       });
-
-
-
-
     }
     const drawLine = (arrPoint, colors, isAvoid) => {
       // 기존의 모든 Polyline 삭제
@@ -164,7 +157,6 @@ const TmapComponent = () => {
         polylineRef.current.forEach((polyline) => polyline.setMap(null));
         polylineRef.current = [];
       }
-
 
       const drawInfoArr = [];
       for (let i = 0; i < arrPoint.length - 1; i++) {
@@ -228,62 +220,79 @@ const TmapComponent = () => {
         }
       };
 
+      // pc 이벤트 리스너 추가
+      tmapInstanceRef.current.addListener("click", function (e) {
+        setClickLat(e.latLng.lat());
+        setClickLng(e.latLng.lng());
+        setIsClick((prev) => prev + 1);
+      });
 
       // 모바일 이벤트 리스너 추가
-      tmapInstanceRef.current.addListener("click", function (e) {
-        setClickLat(e.latLng.lat())
-        setClickLng(e.latLng.lng())
-        setIsClick((prev) => prev + 1)
+      tmapInstanceRef.current.addListener("touchend", function (e) {
+        setClickLat(e.latLng.lat());
+        setClickLng(e.latLng.lng());
+        setIsClick((prev) => prev + 1);
       });
 
       if (isClick === 0) {
         async function fetchOne() {
-          await fetchRoute(initial.lng, initial.lat, markers[0].lon, markers[0].lat, true);
+          await fetchRoute(
+            initial.lng,
+            initial.lat,
+            markers[0].lon,
+            markers[0].lat,
+            true
+          );
         }
 
-        fetchOne()
+        fetchOne();
       } else {
         async function fetchRoutes() {
           await fetchRoute(initial.lng, initial.lat, clickLng, clickLat, true);
-          await fetchRoute(clickLng, clickLat, markers[0].lon, markers[0].lat, false);
+          await fetchRoute(
+            clickLng,
+            clickLat,
+            markers[0].lon,
+            markers[0].lat,
+            false
+          );
         }
 
         // fetchRoutes 함수를 호출하여 순차적으로 실행
         fetchRoutes();
       }
-
-
     }
-
-
 
     initTmap();
   }, [isMap, initial, markers, clickLat, clickLng]);
 
-
   useEffect(() => {
-    const bounds = tmapInstanceRef.current.getBounds()
-    axios.get(`https://spot.tonggn.com/spots?startLatitude=${bounds._sw._lat}&startLongitude=${bounds._sw._lng}&endLatitude=${bounds._ne._lat}&endLongitude=${bounds._ne._lng}`)
-      .then(res => {
-        const data = normalizeWeights(res.data.spots)
+    const bounds = tmapInstanceRef.current.getBounds();
+    axios
+      .get(
+        `https://spot.tonggn.com/spots?startLatitude=${bounds._sw._lat}&startLongitude=${bounds._sw._lng}&endLatitude=${bounds._ne._lat}&endLongitude=${bounds._ne._lng}`
+      )
+      .then((res) => {
+        const data = normalizeWeights(res.data.spots);
 
-        data.map(item => {
-          const orange = getOrangSpot(item.normalizedWeight, item.normalizedWeight)
+        data.map((item) => {
+          const orange = getOrangSpot(
+            item.normalizedWeight,
+            item.normalizedWeight
+          );
 
           new window.Tmapv2.Marker({
             position: new window.Tmapv2.LatLng(item.latitude, item.longitude),
             iconHTML: orange,
             map: tmapInstanceRef.current,
           });
-        })
-
-      }).catch(err => console.log(err))
-
-  }, [])
+        });
+      })
+      .catch((err) => console.log(err));
+  }, []);
   useEffect(() => {
-    console.log(markers)
-  }, [])
-
+    console.log(markers);
+  }, []);
 
   return (
     <>
@@ -299,15 +308,13 @@ const TmapComponent = () => {
             onClick={() => {
               setString((prev) => {
                 if (prev === "출발!") {
-                  setIsMap(true)
-                  return "도착!"
+                  setIsMap(true);
+                  return "도착!";
                 } else {
-
-                  setIsArrive(true)
-                  return "도착!"
+                  setIsArrive(true);
+                  return "도착!";
                 }
-              })
-
+              });
             }}
           >
             <WideButton>{string}</WideButton>
