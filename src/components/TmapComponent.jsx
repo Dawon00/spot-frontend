@@ -120,6 +120,8 @@ const TmapComponent = () => {
 
   const [isClick, setIsClick] = useState(0)
 
+  const polylineRef = useRef([]); // Polyline 객체들을 저장하는 Ref
+
   const onValid = (data) => {
     const fullAddr = data.search;
     console.log(fullAddr);
@@ -222,9 +224,15 @@ const TmapComponent = () => {
 
       });
     }
-    const drawLine = (arrPoint, colors) => {
-      const drawInfoArr = [];
+    const drawLine = (arrPoint, colors, isAvoid) => {
+      // 기존의 모든 Polyline 삭제
+      if (isAvoid) {
+        polylineRef.current.forEach((polyline) => polyline.setMap(null));
+        polylineRef.current = [];
+      }
 
+
+      const drawInfoArr = [];
       for (let i = 0; i < arrPoint.length - 1; i++) {
         const polyline = new window.Tmapv2.Polyline({
           path: [arrPoint[i], arrPoint[i + 1]],
@@ -234,12 +242,11 @@ const TmapComponent = () => {
         });
         drawInfoArr.push(polyline);
       }
-
-      // setResultDrawArr((prevArr) => [...prevArr, ...drawInfoArr]);
+      polylineRef.current = drawInfoArr; // 새로운 Polyline 객체들 저장
     };
 
     if (isMap) {
-      const fetchRoute = async (startX, startY, endX, endY) => {
+      const fetchRoute = async (startX, startY, endX, endY, isAvoid) => {
         try {
           const headers = { appKey: import.meta.env.VITE_TMAP_API_KEY };
           const response = await axios.post(
@@ -281,7 +288,7 @@ const TmapComponent = () => {
           });
 
           segmentColors = gradientColorsHex(drawInfoArr.length - 1);
-          drawLine(drawInfoArr, segmentColors);
+          drawLine(drawInfoArr, segmentColors, isAvoid);
         } catch (error) {
           console.error("Error fetching route:", error);
         }
@@ -296,10 +303,19 @@ const TmapComponent = () => {
       });
 
       if (isClick === 0) {
-        fetchRoute(initial.lng, initial.lat, markers[0].lon, markers[0].lat);
+        async function fetchOne() {
+          await fetchRoute(initial.lng, initial.lat, markers[0].lon, markers[0].lat, true);
+        }
+
+        fetchOne()
       } else {
-        fetchRoute(initial.lng, initial.lat, clickLng, clickLat);
-        fetchRoute(clickLng, clickLat, markers[0].lon, markers[0].lat);
+        async function fetchRoutes() {
+          await fetchRoute(initial.lng, initial.lat, clickLng, clickLat, true);
+          await fetchRoute(clickLng, clickLat, markers[0].lon, markers[0].lat, false);
+        }
+
+        // fetchRoutes 함수를 호출하여 순차적으로 실행
+        fetchRoutes();
       }
 
 
