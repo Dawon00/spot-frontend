@@ -26,6 +26,7 @@ export const searchTypeState = atom({
   default: "",
 });
 
+
 export const isClickDeState = atom({
   key: "isClickDeState",
   default: false
@@ -35,3 +36,9 @@ export const markerState = atom({
   key: "markerState",
   default: []
 })
+
+export const isArrivedState = atom({
+  key: "isArrivedState",
+  default: false,
+});
+
