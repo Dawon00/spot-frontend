@@ -4,12 +4,12 @@ import { atom } from "recoil";
 export const initialState = atom({
   key: "initialState",
   default: {
-    stateName: "김충기꽃삼겹 포항죽도점",
+    stateName: "포항동부이끌림아파트",
 
-    lat: "36.019433",
-    lng: "129.353066",
-  }
-})
+    lat: "36.021793",
+    lng: "129.351843",
+  },
+});
 
 export const departureState = atom({
   key: "departureState",
@@ -58,9 +58,8 @@ export const isArrivedState = atom({
   default: false,
 });
 
-
 // 길찾기 시작하는 state
 export const isMapState = atom({
   key: "isMapState",
-  default: false
-})
+  default: false,
+});
