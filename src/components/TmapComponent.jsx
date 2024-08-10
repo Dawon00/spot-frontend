@@ -115,6 +115,11 @@ const TmapComponent = () => {
   const [stopOver, setStopOver] = useRecoilState(stopOverState);
   const { register, handleSubmit } = useForm();
 
+  const [clickLat, setClickLat] = useState(null)
+  const [clickLng, setClickLng] = useState(null)
+
+  const [isClick, setIsClick] = useState(0)
+
   const onValid = (data) => {
     const fullAddr = data.search;
     console.log(fullAddr);
@@ -157,12 +162,14 @@ const TmapComponent = () => {
         latEntr = latEntr || newLatEntr || 0;
         console.log(lon, lat);
 
-        setMarkers((prev) => [...prev, { lat: lat, lng: lon }]);
+        setMarkers((prev) => [...prev, { type: "pending", lat: lat, lng: lon }]);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   };
+
+
 
   useEffect(() => {
     const initTmap = () => {
@@ -193,36 +200,9 @@ const TmapComponent = () => {
           map: tmapInstanceRef.current,
         });
 
-        // 모바일 이벤트 리스너 추가
-        tmapInstanceRef.current.addListener("touchstart", function (e) {
-          const clickedLat = e.latLng.lat();
-          const clickedLng = e.latLng.lng();
 
-          // 새로운 마커를 markers 상태에 추가
-          setStopOver((prevMarkers) => [
-            ...prevMarkers,
-            [clickedLat, clickedLng],
-          ]);
-        });
-
-        // pc 이벤트 리스너 추가
-        tmapInstanceRef.current.addListener("click", function (e) {
-          const clickedLat = e.latLng.lat();
-          const clickedLng = e.latLng.lng();
-
-          // 새로운 마커를 markers 상태에 추가
-          setStopOver((prevMarkers) => [
-            ...prevMarkers,
-            [clickedLat, clickedLng],
-          ]);
-        });
       }
     };
-
-    initTmap();
-  }, [initial, setMarkers]);
-
-  useEffect(() => {
     if (tmapInstanceRef.current) {
       markers.forEach((marker) => {
         new window.Tmapv2.Marker({
@@ -231,24 +211,17 @@ const TmapComponent = () => {
             marker.type === "departure"
               ? DepMarker
               : marker.type === "destination"
-              ? DestMarker
-              : CurrentMarker,
+                ? DestMarker
+                : CurrentMarker,
           iconSize: new window.Tmapv2.Size(10, 20),
           map: tmapInstanceRef.current,
         });
-      });
-
-      // 지도 중심 이동
-      if (markers.length > 0) {
-        const lastMarker = markers[markers.length - 1];
         tmapInstanceRef.current.setCenter(
-          new window.Tmapv2.LatLng(lastMarker.lat, lastMarker.lon)
+          new window.Tmapv2.LatLng(marker.lat, marker.lon)
         );
-      }
-    }
-  }, [markers]);
 
-  useEffect(() => {
+      });
+    }
     const drawLine = (arrPoint, colors) => {
       const drawInfoArr = [];
 
@@ -265,17 +238,17 @@ const TmapComponent = () => {
       // setResultDrawArr((prevArr) => [...prevArr, ...drawInfoArr]);
     };
 
-    if (isMap && markers.length > 0) {
-      const fetchRoute = async () => {
+    if (isMap) {
+      const fetchRoute = async (startX, startY, endX, endY) => {
         try {
           const headers = { appKey: import.meta.env.VITE_TMAP_API_KEY };
           const response = await axios.post(
             "https://apis.openapi.sk.com/tmap/routes/pedestrian?version=1&format=json",
             {
-              startX: initial.lng,
-              startY: initial.lat,
-              endX: markers[0].lon,
-              endY: markers[0].lat,
+              startX: startX,
+              startY: startY,
+              endX: endX,
+              endY: endY,
               reqCoordType: "WGS84GEO",
               resCoordType: "EPSG3857",
               startName: "출발지",
@@ -314,9 +287,31 @@ const TmapComponent = () => {
         }
       };
 
-      fetchRoute();
+
+      // 모바일 이벤트 리스너 추가
+      tmapInstanceRef.current.addListener("click", function (e) {
+        setClickLat(e.latLng.lat())
+        setClickLng(e.latLng.lng())
+        setIsClick((prev) => prev + 1)
+      });
+
+      if (isClick === 0) {
+        fetchRoute(initial.lng, initial.lat, markers[0].lon, markers[0].lat);
+      } else {
+        fetchRoute(initial.lng, initial.lat, clickLng, clickLat);
+        fetchRoute(clickLng, clickLat, markers[0].lon, markers[0].lat);
+      }
+
+
     }
-  }, [isMap, markers, initial]);
+
+    initTmap();
+  }, [isMap, initial, markers, clickLat, clickLng]);
+
+  useEffect(() => {
+    console.log("여기 좌표", clickLat, clickLng)
+  }, [clickLat, clickLng])
+
 
   return (
     <>
