@@ -17,10 +17,11 @@ import {
 
 import LocationSelector from "./LocationSelector";
 import WideButton from "./WideButton";
-import { OrangeSpot } from "../assets/OrangeSpot";
+import { getOrangSpot } from "../assets/OrangeSpot";
 import { DepMarker } from "../assets/DepMarker";
 import { DestMarker } from "../assets/DestMarker";
-import { CurrentMarker } from "./CurrentMarker";
+import { CurrentMarker } from "../assets/CurrentMarker";
+import { normalizeWeights } from "../\butils/normalizeWeights";
 
 const TmapComponent = () => {
   const mapRef = useRef(null);
@@ -261,13 +262,14 @@ const TmapComponent = () => {
     const bounds = tmapInstanceRef.current.getBounds()
     axios.get(`https://spot.tonggn.com/spots?startLatitude=${bounds._sw._lat}&startLongitude=${bounds._sw._lng}&endLatitude=${bounds._ne._lat}&endLongitude=${bounds._ne._lng}`)
       .then(res => {
-        console.log(res, "왜 안 보여줌???")
-        const data = res.data.spots
+        const data = normalizeWeights(res.data.spots)
 
         data.map(item => {
+          const orange = getOrangSpot(item.normalizedWeight, item.normalizedWeight)
+
           new window.Tmapv2.Marker({
             position: new window.Tmapv2.LatLng(item.latitude, item.longitude),
-
+            iconHTML: orange,
             map: tmapInstanceRef.current,
           });
         })
