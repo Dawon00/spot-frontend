@@ -139,6 +139,9 @@ const TmapComponent = () => {
         position: new window.Tmapv2.LatLng(marker.lat, marker.lon),
         map: tmapInstanceRef.current,
       });
+      // 지도 중심 이동
+      tmapInstanceRef.current.setCenter(new window.Tmapv2.LatLng(marker.lat, marker.lon));
+
     });
     // const drawLine = (arrPoint, colors) => {
     //   const drawInfoArr = [];
