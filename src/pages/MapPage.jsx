@@ -7,9 +7,11 @@ import { isArrivedState } from "../atom/mapState";
 import { useRecoilState } from "recoil";
 import PopUp from "../components/PopUp";
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 
 const MapPage = () => {
   const [isArrived] = useRecoilState(isArrivedState);
+  const navigate = useNavigate()
   return (
     <div className="min-h-screen">
       <TmapComponent />
@@ -35,8 +37,8 @@ const MapPage = () => {
             </PopUp>
 
             <div className="mt-4 w-[290px] flex justify-between">
-              <Button isActived={false}>별로예요</Button>
-              <Button>좋았어요</Button>
+              <Button isActived={false} onClick={() => navigate("/")}>별로예요</Button>
+              <Button onClick={() => navigate("/")}>좋았어요</Button>
             </div>
           </div>
         </div>

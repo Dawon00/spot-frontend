@@ -299,13 +299,15 @@ const TmapComponent = () => {
             onClick={() => {
               setString((prev) => {
                 if (prev === "출발!") {
+                  setIsMap(true)
                   return "도착!"
                 } else {
+
                   setIsArrive(true)
                   return "도착!"
                 }
               })
-              setIsMap(true)
+
             }}
           >
             <WideButton>{string}</WideButton>
