@@ -8,6 +8,7 @@ import SearchResult from "./SearchResult";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
   initialState,
+  isArrivedState,
   isClickDeState,
   isMapState,
   isSearchingState,
@@ -45,7 +46,9 @@ const TmapComponent = () => {
   const polylineRef = useRef([]); // Polyline 객체들을 저장하는 Ref
 
   const [spots, setSpots] = useState([]);
+  const [string, setString] = useState("출발!")
 
+  const [isArrive, setIsArrive] = useRecoilState(isArrivedState)
 
 
   const onValid = (data) => {
@@ -277,6 +280,9 @@ const TmapComponent = () => {
       }).catch(err => console.log(err))
 
   }, [])
+  useEffect(() => {
+    console.log(markers)
+  }, [])
 
 
   return (
@@ -290,9 +296,19 @@ const TmapComponent = () => {
         {isClickDe ? (
           <div
             className="fixed w-full bottom-4 left-0 px-3"
-            onClick={() => setIsMap(true)}
+            onClick={() => {
+              setString((prev) => {
+                if (prev === "출발!") {
+                  return "도착!"
+                } else {
+                  setIsArrive(true)
+                  return "도착!"
+                }
+              })
+              setIsMap(true)
+            }}
           >
-            <WideButton>다음</WideButton>
+            <WideButton>{string}</WideButton>
           </div>
         ) : null}
       </div>
