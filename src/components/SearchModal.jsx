@@ -67,7 +67,7 @@ function SearchModal() {
           {...register("search")}
           type="text"
           className="grow rounded"
-          placeholder="장소를 검색하세요"
+          placeholder="Search Location"
         />
       </label>
     </form>

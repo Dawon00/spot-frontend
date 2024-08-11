@@ -29,7 +29,7 @@ function SearchResult() {
           setIsSearching(false)
           setIsClickDe(true)
 
-        }}>출발지</div>
+        }}>From</div>
         <div>|</div>
         <div className="w-1/2 flex justify-center" onClick={() => {
           setDest(before)
@@ -37,7 +37,7 @@ function SearchResult() {
           setIsClickDe(true)
 
 
-        }}>도착지</div>
+        }}>To</div>
       </div>
     </div>
   );

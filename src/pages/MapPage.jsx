@@ -21,24 +21,24 @@ const MapPage = () => {
             <PopUp>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold leading-tight">
-                  도착했습니다!
+                  Finally Arrived!
                 </h3>
                 <p className="text-sm font-normal text-[#B9B9B9] leading-[14px]">
-                  경로는 쾌적했나요?
+                  Is route was comfortable to you?
                 </p>
                 <div className="h-[1px] w-[290px] bg-[#585858]"></div>
                 <p className="text-sm font-normal text-[#B9B9B9] leading-[14px]">
-                  여러분의 목소리로
+                  This answer will be the data for
                 </p>
                 <p className="text-sm font-normal text-[#B9B9B9] leading-[14px]">
-                  더 나은 장소를 제공할게요!
+                  more concrete expectation!
                 </p>
               </div>
             </PopUp>
 
             <div className="mt-4 w-[290px] flex justify-between">
-              <Button isActived={false} onClick={() => navigate("/")}>별로예요</Button>
-              <Button onClick={() => navigate("/")}>좋았어요</Button>
+              <Button isActived={false} onClick={() => navigate("/")}>No</Button>
+              <Button onClick={() => navigate("/")}>Yes</Button>
             </div>
           </div>
         </div>

@@ -38,7 +38,7 @@ function LocationSelector() {
               {isMap ? (
                 <img src={blueDot} alt="blueDot" className="w-3 h-4 mr-3" />
               ) : (
-                <span className="mr-3">출발</span>
+                <span className="mr-3 w-10">From</span>
               )}
 
               {isMap ? (
@@ -53,7 +53,7 @@ function LocationSelector() {
               {isMap ? (
                 <img src={greenDot} alt="greenDot" className="w-3 h-4 mr-3" />
               ) : (
-                <span className="mr-3">도착</span>
+                <span className="mr-3 w-10">To</span>
               )}{" "}
               {isMap ? (
                 <span className="text-white">{dest}</span>
