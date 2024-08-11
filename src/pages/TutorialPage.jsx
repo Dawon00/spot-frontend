@@ -37,10 +37,10 @@ function TutorialPage() {
 
   const buttonText =
     currentStep === steps.length - 2
-      ? "완료하기"
+      ? "COMPLETE"
       : currentStep === 0
-      ? "시작"
-      : "다음";
+      ? "STRAT"
+      : "Next";
 
   return (
     <div className="w-full min-h-screen bg-black relative overflow-hidden">

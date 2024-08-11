@@ -8,51 +8,64 @@ import { isSearchingState, markerState, beforeState } from "../atom/mapState";
 // if isSearching true, show search icon
 // if isSearching false, show left arrow icon
 function SearchModal() {
-  const { register, handleSubmit } = useForm()
+  const { register, handleSubmit } = useForm();
 
-  const [markers, setMarkers] = useRecoilState(markerState)
-  const [isSearching, setIsSearching] = useRecoilState(isSearchingState)
-  const [before, setBefore] = useRecoilState(beforeState)
+  const [markers, setMarkers] = useRecoilState(markerState);
+  const [isSearching, setIsSearching] = useRecoilState(isSearchingState);
+  const [before, setBefore] = useRecoilState(beforeState);
 
   const onValid = (data) => {
-    const fullAddr = data.search
-
+    const fullAddr = data.search;
 
     const headers = { appKey: import.meta.env.VITE_TMAP_API_KEY };
-    const url = 'https://apis.openapi.sk.com/tmap/geo/fullAddrGeo?version=1&format=json&callback=result';
+    const url =
+      "https://apis.openapi.sk.com/tmap/geo/fullAddrGeo?version=1&format=json&callback=result";
 
-    axios.get(url, {
-      headers,
-      params: {
-        coordType: 'WGS84GEO',
-        fullAddr
-      }
-    })
-      .then(response => {
+    axios
+      .get(url, {
+        headers,
+        params: {
+          coordType: "WGS84GEO",
+          fullAddr,
+        },
+      })
+      .then((response) => {
         const resultInfo = response.data.coordinateInfo;
         if (!resultInfo.coordinate.length) {
-          setResult('요청 데이터가 올바르지 않습니다.');
+          // eslint-disable-next-line no-undef
+          setResult("요청 데이터가 올바르지 않습니다.");
           return;
         }
 
-        let { lon, lat, lonEntr, latEntr, newLon, newLat, newLonEntr, newLatEntr } = resultInfo.coordinate[0];
+        let {
+          lon,
+          lat,
+          lonEntr,
+          latEntr,
+          newLon,
+          newLat,
+          newLonEntr,
+          newLatEntr,
+        } = resultInfo.coordinate[0];
 
         // 새주소가 있을 경우 처리
         lon = lon || newLon;
         lat = lat || newLat;
         lonEntr = lonEntr || newLonEntr || 0;
         latEntr = latEntr || newLatEntr || 0;
-        console.log(lon, lat)
+        console.log(lon, lat);
 
-        setMarkers(prev => [...prev, { type: "destination", lat: lat, lon: lon }])
-        setBefore(fullAddr)
-        setIsSearching(prev => !prev)
+        setMarkers((prev) => [
+          ...prev,
+          { type: "destination", lat: lat, lon: lon },
+        ]);
+        setBefore(fullAddr);
+        setIsSearching((prev) => !prev);
       })
-      .catch(error => {
-        console.error('Error:', error);
-
+      .catch((error) => {
+        console.error("Error:", error);
       });
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onValid)} className="flex justify-center">
