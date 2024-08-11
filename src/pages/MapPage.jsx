@@ -21,19 +21,17 @@ const MapPage = () => {
             <PopUp>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold leading-tight">
-                  Finally Arrived! Finally Arrived!
+                  Finally Arrived!
                 </h3>
                 <p className="text-sm font-normal text-[#B9B9B9] leading-[14px]">
-                  Is route was comfortable to you? Is route was comfortable to
-                  you?
+                  Is route was comfortable to you?
                 </p>
                 <div className="h-[1px] w-[290px] bg-[#585858]"></div>
                 <p className="text-sm font-normal text-[#B9B9B9] leading-[14px]">
-                  This answer will be the data for This answer will be the data
-                  for
+                  This answer will be the data for
                 </p>
                 <p className="text-sm font-normal text-[#B9B9B9] leading-[14px]">
-                  more concrete expectation! more concrete expectation!
+                  more concrete expectation!
                 </p>
               </div>
             </PopUp>
