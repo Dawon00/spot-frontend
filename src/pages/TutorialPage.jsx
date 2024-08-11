@@ -39,7 +39,7 @@ function TutorialPage() {
     currentStep === steps.length - 2
       ? "COMPLETE"
       : currentStep === 0
-      ? "STRAT"
+      ? "START"
       : "Next";
 
   return (
