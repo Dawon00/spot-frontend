@@ -41,16 +41,6 @@ function SearchResult() {
         >
           From
         </div>
-        <div
-          className="w-1/2 flex justify-center"
-          onClick={() => {
-            setDep(before);
-            setIsSearching(false);
-            setIsClickDe(true);
-          }}
-        >
-          From
-        </div>
         <div>|</div>
         <div
           className="w-1/2 flex justify-center"
