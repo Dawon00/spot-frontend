@@ -46,7 +46,7 @@ const TmapComponent = () => {
   const polylineRef = useRef([]); // Polyline 객체들을 저장하는 Ref
 
   const [spots, setSpots] = useState([]);
-  const [string, setString] = useState("출발!");
+  const [string, setString] = useState("Let's Go!");
 
   const [isArrive, setIsArrive] = useRecoilState(isArrivedState);
 
@@ -141,13 +141,13 @@ const TmapComponent = () => {
             marker.type === "departure"
               ? DepMarker
               : marker.type === "destination"
-              ? DestMarker
-              : CurrentMarker,
+                ? DestMarker
+                : CurrentMarker,
           iconSize: new window.Tmapv2.Size(10, 20),
           map: tmapInstanceRef.current,
         });
 
-        if (string === "도착!") {
+        if (string === "Arrived") {
           const lat = marker.lat
           const lon = marker.lon
 
@@ -328,12 +328,12 @@ const TmapComponent = () => {
             className="fixed w-full bottom-4 left-0 px-3"
             onClick={() => {
               setString((prev) => {
-                if (prev === "출발!") {
+                if (prev === "Let's Go!") {
                   setIsMap(true);
-                  return "도착!";
+                  return "Arrived";
                 } else {
                   setIsArrive(true);
-                  return "도착!";
+                  return "Arrived";
                 }
               });
             }}
